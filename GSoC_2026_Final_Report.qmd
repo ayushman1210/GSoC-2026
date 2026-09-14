@@ -1,0 +1,120 @@
+---
+title: "GSoC 2026 Final Project Report: PEcAn Benchmarking & Validation Framework"
+author: "Ayushman (ayushman1210)"
+date: "2026-09-14"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    embed-resources: true
+---
+
+## Project Overview
+
+- **Project Title**: GSoC 2026: Benchmarking and Validation Framework
+- **Contributor**: Ayushman ([@ayushman1210](https://github.com/ayushman1210))
+- **Mentors**: David LeBauer ([@dlebauer](https://github.com/dlebauer)), Akash ([@akash-g5](https://github.com/akash-g5))
+- **Organization**: [PEcAn Project](https://github.com/PecanProject/pecan)
+- **Repository**: [PEcAnProject/pecan](https://github.com/PecanProject/pecan)
+
+### Executive Summary
+
+Historically, PEcAn's legacy `PEcAn.benchmark` module was tightly coupled to BETYdb (PEcAn's PostgreSQL relational database). This architecture required all model outputs and observational datasets to be registered in the database before any statistical alignment or benchmarking could take place. In addition, state data assimilation (SDA) and field campaign workflows maintained redundant, custom scripts for data parsing, alignment, and scoring.
+
+During **GSoC 2026**, the project pivoted away from refactoring rigid legacy database code to build a **General-Purpose Validation Toolkit**. The new toolkit operates on a **Dataframe-First Architecture**, allowing users to flexibly ingest arbitrary tabular (CSV, TSV, RDS) or gridded (NetCDF) datasets, map variable names natively, align observations and predictions using high-performance binary search routines, calculate statistical and uncertainty metrics, and auto-generate publication-ready HTML/PDF benchmark scorecards using Quarto.
+
+---
+
+## Codebase Audit & Design Pattern Extraction
+
+As part of Phase 1, an audit of legacy benchmark and SDA scripts was conducted:
+- `modules/assim.sequential/R/SDA_OBS_Assembler.R`
+- `modules/assim.sequential/inst/paleon_sda.R`
+- `modules/assim.sequential/inst/SDA_runner.R`
+- `modules/assim.sequential/R/Helper.functions.R`
+- `modules/assim.sequential/inst/WillowCreek/gapfill_WCr.R`
+
+### Key Audit Findings
+
+1. **Database Coupling**: Legacy functions assumed inputs came directly from BETYdb tables, preventing offline CSV or external dataset validation.
+2. **Monolithic Alignment**: Time alignment used slow nested loops without tolerance thresholds, leading to silent data dropping.
+3. **Hardcoded Metrics**: Metrics were embedded inside execution loops rather than isolated into pure, reusable functions.
+
+---
+
+## Merged Pull Requests & Issue Summary
+
+All project milestones across Phases 1 through 5 were completed, tested, documented, and merged:
+
+| Phase | PR / Issue Link | Scope & Deliverable | Status |
+| :--- | :--- | :--- | :---: |
+| **Phase 1 & 2** | [PR #4017](https://github.com/PecanProject/pecan/pull/4017) | **Data Intake API & Baseline Refactor**: Abstracted data loading out of BETYdb into pure R loaders (`load_data.R`). Implemented `align_by_time` with fast `findInterval` binary search tolerances and added `pecan_metric_registry`. | Merged |
+| **Phase 2** | [PR #4041](https://github.com/PecanProject/pecan/pull/4041) | **Standalone Metric Isolation**: Decoupled core statistical metrics (`RMSE`, `MAE`, `R2`, `Correlation`, `Bias`) into pure functions. Sanitized test environments and removed unreliable fallbacks. | Merged |
+| **Phase 2** | [PR #4032](https://github.com/PecanProject/pecan/pull/4032)<br>[Issue #4027](https://github.com/PecanProject/pecan/issues/4027) | **Numeric Metrics & UQ Calibration Coverage**: Achieved 100% test coverage for all 9 legacy numeric metrics. Added Predictive Model Uncertainty (`metric_PMU`) and Prediction Interval Coverage (`metric_Coverage`). Documented `metric_R2`. | Merged |
+| **Phase 3** | [PR #4040](https://github.com/PecanProject/pecan/pull/4040)<br>[Issue #4037](https://github.com/PecanProject/pecan/issues/4037) | **Automated Reporting & Visualizations**: Modernized `ggplot2` plotting suite. Built parameterized Quarto scorecard template (`Validation_report.qmd`) and `generate_validation_report()` API. | Merged |
+| **Phase 4** | [PR #4062](https://github.com/PecanProject/pecan/pull/4062)<br>[Issue #4059](https://github.com/PecanProject/pecan/issues/4059) | **MVP Integration & Real-World Benchmarks**: Constructed Salinas SOC multi-site 50-member ensemble benchmark and AmeriFlux tower validation workflow. Developed `efi_long_to_array()` parser for EFI long format forecasts. | Merged |
+| **Phase 5** | [PR #4087](https://github.com/PecanProject/pecan/pull/4087)<br>[PR #4076](https://github.com/PecanProject/pecan/pull/4076) | **Final Handoff, Documentation & Vignette**: Authored comprehensive tutorial vignette (`validation_framework_tutorial.Rmd`), expanded `testthat` suite to 16 test files, and completed Roxygen2 blocks across all exported functions. | Merged |
+
+---
+
+## Technical Architecture & Core Toolkit Components
+
+### 1. Pure R Data Intake API (`load_data.R`)
+Flexible loader supporting arbitrary CSV, TSV, RDS, and NetCDF files with native column-to-PEcAn variable mapping via configuration lists.
+
+### 2. High-Performance Alignment (`align_data.R`)
+Replaced slow loops with binary search matching (`findInterval`) and user-configurable temporal tolerances (e.g. 1 hour, 1 day) to handle sampling rate mismatches cleanly.
+
+### 3. Complete Statistical & Uncertainty Quantification Metric Suite
+- **Numeric Statistical Metrics**: `Bias`, `RMSE`, `MSE`, `MAE`, `R2`, `Correlation` (`metric_cor`), `AME`, `RAE`, `Frechet`, `PPMC`.
+- **Probabilistic & UQ Calibration Metrics**:
+  - `metric_Coverage`: Quantifies Empirical Prediction Interval Coverage (e.g., 90% PI calibration check).
+  - `metric_PMU`: Predictive Model Uncertainty ratio.
+  - `metric_CRPS`: Continuous Ranked Probability Score for ensemble outputs.
+
+### 4. Automated Quarto Scorecard Engine
+- **`Validation_report.qmd`**: Parameterized Quarto scorecard template compiling metrics, tables, and ggplot2 figures into interactive HTML reports.
+- **`generate_validation_report()`**: R API wrapper for programmatic report compilation.
+
+---
+
+## Real-World MVP Benchmarks
+
+### 1. Salinas Organic Cropping Systems (SOC) Ensemble Benchmark
+- Evaluated 50-member model predictions across 8 agricultural management systems against observed Soil Organic Carbon (SOC) stocks.
+- HTML Report: `Salinas_SOC_Validation_Report.html`
+
+### 2. AmeriFlux Tower Flux Validation Workflow
+- Benchmarked ecosystem carbon and water flux predictions against high-frequency eddy-covariance tower observations.
+- HTML Report: `AmeriFlux_Validation_Report.html`
+
+---
+
+## Unit Testing & Quality Assurance
+
+Expanded the `testthat` suite across **16 test files** covering 100% of lifted functions:
+
+- `test-align_pft.R`
+- `test-data_intake.R`
+- `test-efi_long_to_array.R`
+- `test-ensemble_integration.R`
+- `test-load_csv.R`
+- `test-load_data.R`
+- `test-load_netcdf.R`
+- `test-load_rds.R`
+- `test-load_tab.R`
+- `test-metric_Bias.R`
+- `test-metric_CRPS.R`
+- `test-metrics.R`
+- `test-numeric_metrics.R`
+- `test-run_benchmark.R`
+- `test-vignette_execution.R`
+- `test-visualization.R`
+
+---
+
+## Acknowledgements
+
+Thank you to the **PEcAn Project** community and especially my mentors **David LeBauer** and **Akash** for their unwavering guidance, encouragement, and support throughout GSoC 2026!
