@@ -7,7 +7,7 @@
 
 ---
 
-## 🌟 Key Findings & Main Accomplishments
+##  Key Findings & Main Accomplishments
 
 Before delving into metadata and pull requests, here are the primary scientific and technical results achieved by the new validation framework:
 
@@ -63,15 +63,15 @@ Evaluating Prediction Interval Coverage (`metric_Coverage`) on a **90% target in
 ## Quick Navigation (Rendered Reports)
 
 
-- 📊 **[GSoC 2026 Final Project Quarto Report (HTML)](https://ayushman1210.github.io/GSoC-2026/GSoC_2026_Final_Report.html)** ([Repository File](./GSoC_2026_Final_Report.html) | [.qmd Source](./GSoC_2026_Final_Report.qmd))
-- 📈 **[Salinas SOC Ensemble Benchmark Report (HTML)](https://ayushman1210.github.io/GSoC-2026/Salinas_SOC_Validation_Report.html)** ([Repository File](./Salinas_SOC_Validation_Report.html))
-- 🌲 **[AmeriFlux Tower Benchmark Report (HTML)](https://ayushman1210.github.io/GSoC-2026/AmeriFlux_Validation_Report.html)** ([Repository File](./AmeriFlux_Validation_Report.html))
-- 🎓 **[Validation Framework Tutorial Vignette (HTML)](https://ayushman1210.github.io/GSoC-2026/validation_framework_tutorial.html)** ([Repository File](./validation_framework_tutorial.html))
-- 📄 [GSoC 2026 Workplan & Timeline](./workplan.md)
-- 🔍 [Codebase Audit & Architecture Report](./codebase_audit.md)
-- 🔀 [Merged PR & Issue Inventory](./pr_inventory.md)
-- 📚 [Tutorial Vignette & Quickstart Guide](./tutorial_guide.md)
-- 📖 [Tutorial Vignette Source (`validation_framework_tutorial.Rmd`)](./vignettes/validation_framework_tutorial.Rmd)
+-  **[GSoC 2026 Final Project Quarto Report (HTML)](https://ayushman1210.github.io/GSoC-2026/GSoC_2026_Final_Report.html)** ([Repository File](./GSoC_2026_Final_Report.html) | [.qmd Source](./GSoC_2026_Final_Report.qmd))
+-  **[Salinas SOC Ensemble Benchmark Report (HTML)](https://ayushman1210.github.io/GSoC-2026/Salinas_SOC_Validation_Report.html)** ([Repository File](./Salinas_SOC_Validation_Report.html))
+-  **[AmeriFlux Tower Benchmark Report (HTML)](https://ayushman1210.github.io/GSoC-2026/AmeriFlux_Validation_Report.html)** ([Repository File](./AmeriFlux_Validation_Report.html))
+-  **[Validation Framework Tutorial Vignette (HTML)](https://ayushman1210.github.io/GSoC-2026/validation_framework_tutorial.html)** ([Repository File](./validation_framework_tutorial.html))
+-  [GSoC 2026 Workplan & Timeline](./workplan.md)
+-  [Codebase Audit & Architecture Report](./codebase_audit.md)
+-  [Merged PR & Issue Inventory](./pr_inventory.md)
+-  [Tutorial Vignette & Quickstart Guide](./tutorial_guide.md)
+-  [Tutorial Vignette Source (`validation_framework_tutorial.Rmd`)](./vignettes/validation_framework_tutorial.Rmd)
 
 ---
 
